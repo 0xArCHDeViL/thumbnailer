@@ -203,10 +203,20 @@ fi
   --enable-encoder=png \
   --enable-muxer=png \
   \
+  --enable-muxer=image2 \
+  --enable-demuxer=image2 \
+  \
+  --enable-filter=scale \
+  --enable-filter=format \
+  --enable-filter=null \
+  --enable-filter=trim \
+  \
   --enable-parser=h264 \
   --enable-parser=hevc \
   --enable-parser=vp8 \
   --enable-parser=vp9 \
+  --enable-parser=mjpeg \
+  --enable-parser=png \
   \
   --enable-zlib
 
