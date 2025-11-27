@@ -38,7 +38,8 @@ jobs:
             tar \
             xz-utils \
             build-essential \
-            pkg-config
+            pkg-config \
+            upx-ucl
       
       - name: Override FFmpeg version (if manual trigger)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.ffmpeg_version != ''
@@ -98,6 +99,7 @@ jobs:
           
           Configuration:
           - Minimal build for thumbnail generation
+          - UPX compressed for maximum size reduction
           - Protocols: file, http, https, tcp, udp, crypto
           - Demuxers: mov, matroska, mp4, avi, mpegts, flv, webm
           - Decoders: h264, hevc, vp8, vp9

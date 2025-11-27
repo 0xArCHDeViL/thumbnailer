@@ -256,6 +256,33 @@ echo "Stripping binaries to reduce size..."
 ${STRIP} "${OUTPUT_DIR}/bin/ffmpeg"
 ${STRIP} "${OUTPUT_DIR}/bin/ffprobe"
 
+# Get size after stripping
+FFMPEG_SIZE_BEFORE=$(du -h "${OUTPUT_DIR}/bin/ffmpeg" | cut -f1)
+FFPROBE_SIZE_BEFORE=$(du -h "${OUTPUT_DIR}/bin/ffprobe" | cut -f1)
+
+# ============================================================================
+# UPX Compression (Maximum Size Reduction)
+# ============================================================================
+
+echo "Compressing binaries with UPX for maximum size reduction..."
+
+# Check if UPX is available
+if command -v upx &> /dev/null; then
+    echo "Using UPX to compress binaries..."
+    
+    # Compress with best compression
+    upx --best --lzma "${OUTPUT_DIR}/bin/ffmpeg" 2>&1 | grep -v "WARNING" || true
+    upx --best --lzma "${OUTPUT_DIR}/bin/ffprobe" 2>&1 | grep -v "WARNING" || true
+    
+    echo -e "${GREEN}UPX compression completed${NC}"
+else
+    echo -e "${YELLOW}WARNING: UPX not found, skipping compression${NC}"
+    echo "Install UPX for ~60% size reduction:"
+    echo "  Ubuntu/Debian: sudo apt-get install upx-ucl"
+    echo "  macOS: brew install upx"
+fi
+
+
 # ============================================================================
 # Summary
 # ============================================================================
@@ -267,11 +294,17 @@ echo "=========================================="
 echo ""
 echo "Output directory: ${OUTPUT_DIR}"
 echo ""
-echo "Binaries:"
+echo "Binary Sizes:"
 FFMPEG_SIZE=$(du -h "${OUTPUT_DIR}/bin/ffmpeg" | cut -f1)
 FFPROBE_SIZE=$(du -h "${OUTPUT_DIR}/bin/ffprobe" | cut -f1)
-echo "  - ffmpeg:  ${FFMPEG_SIZE}"
-echo "  - ffprobe: ${FFPROBE_SIZE}"
+
+if command -v upx &> /dev/null; then
+    echo "  ffmpeg:  ${FFMPEG_SIZE_BEFORE} → ${FFMPEG_SIZE} (compressed)"
+    echo "  ffprobe: ${FFPROBE_SIZE_BEFORE} → ${FFPROBE_SIZE} (compressed)"
+else
+    echo "  ffmpeg:  ${FFMPEG_SIZE}"
+    echo "  ffprobe: ${FFPROBE_SIZE}"
+fi
 echo ""
 echo "Test the binaries:"
 echo "  adb push ${OUTPUT_DIR}/bin/ffmpeg /data/local/tmp/"

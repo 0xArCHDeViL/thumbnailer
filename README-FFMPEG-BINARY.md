@@ -316,27 +316,30 @@ adb push ffmpeg /data/data/com.termux/files/usr/bin/
 
 ### Binary Size
 
-| Binary | Unstripped | Stripped |
-|--------|------------|----------|
-| ffmpeg | ~12MB | ~8-10MB |
-| ffprobe | ~8MB | ~6-8MB |
+| Binary | Stripped | UPX Compressed |
+|--------|----------|----------------|
+| ffmpeg | ~8-10MB | ~3-4MB |
+| ffprobe | ~6-8MB | ~2-3MB |
 
 ### Size Optimization
 
-Current optimizations:
+Build script menggunakan aggressive size optimization:
 - ✅ `--enable-small` - Optimize for size
 - ✅ `--disable-debug` - No debug symbols
 - ✅ `strip` command - Remove symbols
+- ✅ `upx --best --lzma` - Maximum compression (~60-70% reduction)
 
-Further optimization (optional):
+**Note:** UPX compressed binaries sedikit lebih lambat startup (~50-100ms) tapi size jauh lebih kecil.
+
+#### Disable UPX Compression (Optional)
+
+Jika Anda tidak mau UPX compression, comment out lines di `build-ffmpeg-binary.sh`:
 ```bash
-# Install UPX
-sudo apt-get install upx-ucl
-
-# Compress binary (reduces ~60%)
-upx --best output/bin/ffmpeg
-# Result: ~3-4MB but slower startup
+# # Compress with best compression
+# upx --best --lzma "${OUTPUT_DIR}/bin/ffmpeg" 2>&1 | grep -v "WARNING" || true
+# upx --best --lzma "${OUTPUT_DIR}/bin/ffprobe" 2>&1 | grep -v "WARNING" || true
 ```
+
 
 ## 🔐 Security Notes
 
