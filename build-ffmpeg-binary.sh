@@ -141,12 +141,14 @@ echo -e "\n${YELLOW}[5/6]${NC} Configuring FFmpeg..."
 
 cd "${SOURCE_DIR}"
 
-# Clean previous build
-if [ -f "Makefile" ]; then
-    make distclean || true
+echo "Running configure with minimal flags..."
+
+# Clean previous build (only if previously configured)
+if [ -f "config.h" ]; then
+    echo "Cleaning previous build..."
+    make distclean 2>/dev/null || true
 fi
 
-echo "Running configure with minimal flags..."
 
 ./configure \
   --prefix="${OUTPUT_DIR}" \
@@ -168,9 +170,6 @@ echo "Running configure with minimal flags..."
   --disable-symver \
   --enable-pthreads \
   \
-  --enable-programs \
-  --enable-ffmpeg \
-  --enable-ffprobe \
   --disable-ffplay \
   --disable-doc \
   \
